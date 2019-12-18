@@ -1,5 +1,16 @@
 FROM upadrishta/pir
 
+# install cmake
+RUN wget https://cmake.org/files/v3.12/cmake-3.12.0-rc2.tar.gz && \
+    tar xzf cmake-3.12.0-rc2.tar.gz && \
+    cd cmake-3.12.0-rc2 && \
+    ./bootstrap && \
+    make && \
+    make install;
+
+# install shiny
+RUN R -e "install.packages('shiny', repos='https://cran.rstudio.com/')";
+
 # create shiny user
 RUN useradd -r -m shiny && \
     usermod -aG sudo shiny
