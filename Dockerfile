@@ -1,15 +1,27 @@
 FROM upadrishta/pir
 
+# install shiny
+RUN R -e "install.packages('later', repos='http://cran.rstudio.com/', type='source')" && \
+    R -e "install.packages('fs', repos='http://cran.rstudio.com/', type='source')" && \
+    R -e "install.packages('Rcpp', repos='http://cran.rstudio.com/', type='source')" && \
+    R -e "install.packages('httpuv', repos='http://cran.rstudio.com/', type='source')" && \
+    R -e "install.packages('mime', repos='http://cran.rstudio.com/', type='source')" && \
+    R -e "install.packages('jsonlite', repos='http://cran.rstudio.com/', type='source')" && \
+    R -e "install.packages('digest', repos='http://cran.rstudio.com/', type='source')" && \
+    R -e "install.packages('htmltools', repos='http://cran.rstudio.com/', type='source')" && \
+    R -e "install.packages('xtable', repos='http://cran.rstudio.com/', type='source')" && \
+    R -e "install.packages('R6', repos='http://cran.rstudio.com/', type='source')" && \
+    R -e "install.packages('Cairo', repos='http://cran.rstudio.com/', type='source')" && \
+    R -e "install.packages('sourcetools', repos='http://cran.rstudio.com/', type='source')" && \
+    R -e "install.packages('shiny', repos='https://cran.rstudio.com/', type='source')"; 
+
 # install cmake
-RUN wget https://cmake.org/files/v3.12/cmake-3.12.0-rc2.tar.gz && \
-    tar xzf cmake-3.12.0-rc2.tar.gz && \
-    cd cmake-3.12.0-rc2 && \
+RUN wget https://cmake.org/files/v3.16/cmake-3.16.1.tar.gz && \
+    tar xzf cmake-3.16.1.tar.gz && \
+    cd cmake-3.16.1 && \
     ./bootstrap && \
     make && \
     make install;
-
-# install shiny
-RUN R -e "install.packages('shiny', repos='https://cran.rstudio.com/')";
 
 # create shiny user
 RUN useradd -r -m shiny && \
