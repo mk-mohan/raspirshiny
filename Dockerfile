@@ -16,7 +16,8 @@ RUN R -e "install.packages('later', repos='http://cran.rstudio.com/', type='sour
     R -e "install.packages('shiny', repos='https://cran.rstudio.com/', type='source')"; 
 
 # install cmake
-RUN wget https://cmake.org/files/v3.16/cmake-3.16.1.tar.gz && \
+RUN apt-get install -y --no-install-recommends libssl-dev && \
+    wget https://cmake.org/files/v3.16/cmake-3.16.1.tar.gz && \
     tar xzf cmake-3.16.1.tar.gz && \
     cd cmake-3.16.1 && \
     ./bootstrap && \
