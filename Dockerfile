@@ -16,13 +16,16 @@ RUN R -e "install.packages('later', repos='http://cran.rstudio.com/', type='sour
     R -e "install.packages('shiny', repos='https://cran.rstudio.com/', type='source')"; 
 
 # install cmake
-RUN apt-get install -y --no-install-recommends libssl-dev && \
-    wget https://cmake.org/files/v3.16/cmake-3.16.1.tar.gz && \
-    tar xzf cmake-3.16.1.tar.gz && \
-    cd cmake-3.16.1 && \
-    ./bootstrap && \
-    make && \
-    make install;
+#ENV OPENSSL_ROOT_DIR="/usr/local/ssl"
+ENV CMAKE_MINOR_VERSION 3.16.1 
+ENV CMAKE_MAJOR_VERSION 3.16
+
+RUN wget https://cmake.org/files/v${CMAKE_MAJOR_VERSION}/cmake-${CMAKE_MINOR_VERSION}.tar.gz && \
+    tar xzf cmake-${CMAKE_MINOR_VERSION}.tar.gz && \
+    cd cmake-${CMAKE_MINOR_VERSION} && \
+    ./bootstrap --system-curl --system-zlib && \ 
+    make && \  
+    make install
 
 # create shiny user
 RUN useradd -r -m shiny && \
@@ -71,7 +74,7 @@ RUN ln -s /usr/local/shiny-server/bin/shiny-server /usr/bin/shiny-server && \
     sudo cp /home/shiny/shiny-server/samples/sample-apps/hello/server.R /srv/shiny-server/example/
 
 # clean up
-RUN rm -R cmake-3.12.0-rc2 && \
+RUN rm -R cmake-${CMAKE_MINOR_VERSION} && \
     rm -R /home/shiny/shiny-server
 
 # copy files
