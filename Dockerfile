@@ -1,88 +1,54 @@
-FROM upadrishta/pir
+FROM upadrishta/pir:3.6.1
 
-# install shiny
-RUN R -e "install.packages('later', repos='http://cran.rstudio.com/', type='source')" && \
-    R -e "install.packages('fs', repos='http://cran.rstudio.com/', type='source')" && \
-    R -e "install.packages('Rcpp', repos='http://cran.rstudio.com/', type='source')" && \
-    R -e "install.packages('httpuv', repos='http://cran.rstudio.com/', type='source')" && \
-    R -e "install.packages('mime', repos='http://cran.rstudio.com/', type='source')" && \
-    R -e "install.packages('jsonlite', repos='http://cran.rstudio.com/', type='source')" && \
-    R -e "install.packages('digest', repos='http://cran.rstudio.com/', type='source')" && \
-    R -e "install.packages('htmltools', repos='http://cran.rstudio.com/', type='source')" && \
-    R -e "install.packages('xtable', repos='http://cran.rstudio.com/', type='source')" && \
-    R -e "install.packages('R6', repos='http://cran.rstudio.com/', type='source')" && \
-    R -e "install.packages('Cairo', repos='http://cran.rstudio.com/', type='source')" && \
-    R -e "install.packages('sourcetools', repos='http://cran.rstudio.com/', type='source')" && \
-    R -e "install.packages('shiny', repos='https://cran.rstudio.com/', type='source')"; 
-
-# install cmake
-#ENV OPENSSL_ROOT_DIR="/usr/local/ssl"
-ENV CMAKE_MINOR_VERSION 3.16.1 
-ENV CMAKE_MAJOR_VERSION 3.16
-
-RUN wget https://cmake.org/files/v${CMAKE_MAJOR_VERSION}/cmake-${CMAKE_MINOR_VERSION}.tar.gz && \
-    tar xzf cmake-${CMAKE_MINOR_VERSION}.tar.gz && \
-    cd cmake-${CMAKE_MINOR_VERSION} && \
-    ./bootstrap --system-curl --system-zlib && \ 
-    make && \  
-    make install
-
-# create shiny user
-RUN useradd -r -m shiny && \
-    usermod -aG sudo shiny
-
-USER shiny
+# install pre-requisites
+RUN apt-get install -y git libssl-dev cmake cpp
 
 # install shiny-server
 RUN cd && \
+    uname -a && \
     git clone https://github.com/rstudio/shiny-server.git && \
     cd shiny-server && \
     mkdir tmp && \
     cd tmp && \
-    DIR=`pwd` && \
-    PATH=$DIR/../bin:$PATH && \
+    PATH=$PWD/../bin:$PATH && \
+    #
     PYTHON=`which python` && \
+    ##../packaging/make-package.sh && \
     cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DPYTHON="$PYTHON" ../ && \
+    #
     make && \
     mkdir ../build && \
-    sed -i '8s/.*/NODE_SHA256=7a2bb6e37615fa45926ac0ad4e5ecda4a98e2956e468dedc337117bfbae0ac68/' ../external/node/install-node.sh && \
-    sed -i 's/linux-x64.tar.xz/linux-armv7l.tar.xz/' ../external/node/install-node.sh && \
+    #local NODE_URL="https://github.com/jcheng5/node-centos6/releases/download/${NODE_VERSION}/${NODE_FILENAME}"
+    #https://github.com/jcheng5/node-centos6/releases/download
+    #https://nodejs.org/dist/v12.14.0/node-v12.14.0-linux-armv7l.tar.xz
+    sed -i 's/NODE_SHA256=.*/NODE_SHA256=bc7d4614a52782a65126fc1cc89c8490fc81eb317255b11e05b9e072e70f141d/' ../external/node/install-node.sh && \
+    sed -i 's/linux-x64.tar.xz/linux-armv7l.tar.xz/' ../external/node/install-node.sh && \   
+    sed -i 's#github.com/jcheng5/node-centos6/releases/download#nodejs.org/dist#' ../external/node/install-node.sh && \
+    cat ../external/node/install-node.sh && \
     (cd .. && ./external/node/install-node.sh) && \
     (cd .. && ./bin/npm --python="${PYTHON}" install --no-optional) && \
-    (cd .. && ./bin/npm --python="${PYTHON}" rebuild)
-
-USER root
-
-RUN cd /home/shiny/shiny-server/tmp/ && \
+    (cd .. && ./bin/npm --python="${PYTHON}" rebuild) && \
     sudo make install
 
 # shiny-server post-install
-RUN ln -s /usr/local/shiny-server/bin/shiny-server /usr/bin/shiny-server && \
+RUN useradd -r -m shiny && usermod -aG sudo shiny && \
+    ln -s /usr/local/shiny-server/bin/shiny-server /usr/bin/shiny-server && \
     sudo mkdir -p /var/log/shiny-server && \
     sudo mkdir -p /srv/shiny-server && \
     sudo mkdir -p /var/lib/shiny-server && \
     sudo chown shiny /var/log/shiny-server && \
     sudo mkdir -p /etc/shiny-server && \
-    # configuration
-    cd && \
-    cp /home/shiny/shiny-server/config/default.config /etc/shiny-server/ && \
-    cd /etc/shiny-server/ && \
-    sudo cp default.config shiny-server.conf && \
     # example app
     sudo mkdir /srv/shiny-server/example && \
     sudo cp /home/shiny/shiny-server/samples/sample-apps/hello/ui.R /srv/shiny-server/example/ && \
     sudo cp /home/shiny/shiny-server/samples/sample-apps/hello/server.R /srv/shiny-server/example/
+# configuration
+COPY shiny-server.conf /etc/shiny-server/ && \
 
 # clean up
-RUN rm -R cmake-${CMAKE_MINOR_VERSION} && \
-    rm -R /home/shiny/shiny-server
-
-# copy files
-COPY init.d-shiny-server /etc/init.d/shiny-server
-COPY ./start.sh /start.sh
-RUN chmod 755 /start.sh
-
+#RUN rm -R cmake-${CMAKE_MINOR_VERSION} && \
+#    rm -R /home/shiny/shiny-server
 
 EXPOSE 3838
 
-ENTRYPOINT ["/start.sh"]
+CMD ["sudo shiny-server"]
