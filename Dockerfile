@@ -38,12 +38,12 @@ RUN useradd -r -m shiny && usermod -aG sudo shiny && \
     sudo mkdir -p /var/lib/shiny-server && \
     sudo chown shiny /var/log/shiny-server && \
     sudo mkdir -p /etc/shiny-server && \
+    # configuration
+    wget https://raw.githubusercontent.com/mk-mohan/raspirshiny/master/shiny-server.conf -O /etc/shiny-server && \
     # example app
     sudo mkdir /srv/shiny-server/example && \
     sudo cp /home/shiny/shiny-server/samples/sample-apps/hello/ui.R /srv/shiny-server/example/ && \
     sudo cp /home/shiny/shiny-server/samples/sample-apps/hello/server.R /srv/shiny-server/example/
-# configuration
-COPY shiny-server.conf /etc/shiny-server/ && \
 
 # clean up
 #RUN rm -R cmake-${CMAKE_MINOR_VERSION} && \
