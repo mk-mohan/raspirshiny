@@ -41,7 +41,7 @@ RUN useradd -r -m shiny && usermod -aG sudo shiny && \
     # configuration
     wget https://raw.githubusercontent.com/mk-mohan/raspirshiny/master/shiny-server.conf -O /etc/shiny-server/shiny-server.conf && \
     # example app
-    wget https://raw.githubusercontent.com/rstudio/shiny-examples/tree/master/001-hello/app.R -P /srv/shiny-server/hello
+    wget https://raw.githubusercontent.com/mk-mohan/raspirshiny/master/hello/app.R -P /srv/shiny-server/hello
 # clean up
 #RUN rm -R cmake-${CMAKE_MINOR_VERSION} && \
 #    rm -R /home/shiny/shiny-server
