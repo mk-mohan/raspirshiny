@@ -39,7 +39,7 @@ RUN useradd -r -m shiny && usermod -aG sudo shiny && \
     sudo chown shiny /var/log/shiny-server && \
     sudo mkdir -p /etc/shiny-server && \
     # configuration
-    wget https://raw.githubusercontent.com/mk-mohan/raspirshiny/master/shiny-server.conf -O /etc/shiny-server && \
+    wget https://raw.githubusercontent.com/mk-mohan/raspirshiny/master/shiny-server.conf -O /etc/shiny-server/shiny-server.conf && \
     # example app
     sudo mkdir /srv/shiny-server/example && \
     sudo cp /home/shiny/shiny-server/samples/sample-apps/hello/ui.R /srv/shiny-server/example/ && \
