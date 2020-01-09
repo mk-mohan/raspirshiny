@@ -13,14 +13,12 @@ RUN cd && \
     PATH=$PWD/../bin:$PATH && \
     #
     PYTHON=`which python` && \
-    ##../packaging/make-package.sh && \
+    #
     cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DPYTHON="$PYTHON" ../ && \
     #
     make && \
     mkdir ../build && \
-    #local NODE_URL="https://github.com/jcheng5/node-centos6/releases/download/${NODE_VERSION}/${NODE_FILENAME}"
-    #https://github.com/jcheng5/node-centos6/releases/download
-    #https://nodejs.org/dist/v12.14.0/node-v12.14.0-linux-armv7l.tar.xz
+    # zap some stuff in external/node/install-node.sh
     sed -i 's/NODE_SHA256=.*/NODE_SHA256=bc7d4614a52782a65126fc1cc89c8490fc81eb317255b11e05b9e072e70f141d/' ../external/node/install-node.sh && \
     sed -i 's/linux-x64.tar.xz/linux-armv7l.tar.xz/' ../external/node/install-node.sh && \   
     sed -i 's#github.com/jcheng5/node-centos6/releases/download#nodejs.org/dist#' ../external/node/install-node.sh && \
@@ -42,10 +40,6 @@ RUN useradd -r -m shiny && usermod -aG sudo shiny && \
     wget https://raw.githubusercontent.com/mk-mohan/raspirshiny/master/shiny-server.conf -O /etc/shiny-server/shiny-server.conf && \
     # example app
     wget https://raw.githubusercontent.com/mk-mohan/raspirshiny/master/hello/app.R -P /srv/shiny-server/hello
-# clean up
-#RUN rm -R cmake-${CMAKE_MINOR_VERSION} && \
-#    rm -R /home/shiny/shiny-server
-
+# 
 EXPOSE 3838
-
 CMD ["sudo shiny-server"]
