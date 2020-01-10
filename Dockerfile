@@ -38,7 +38,7 @@ RUN useradd -r -m shiny && usermod -aG sudo shiny && \
     sudo mkdir -p /etc/shiny-server && \
     # configuration
     wget https://raw.githubusercontent.com/mk-mohan/raspirshiny/master/shiny-server.conf -O /etc/shiny-server/shiny-server.conf && \
-    wget https://raw.githubusercontent.com/mk-mohan/raspirshiny/master/shiny-server.service -O /lib/systemd/system/shiny-server.service && \
+    sudo wget https://raw.githubusercontent.com/mk-mohan/raspirshiny/master/shiny-server.service -O /lib/systemd/system/shiny-server.service && \
     sudo chown shiny /lib/systemd/system/shiny-server.service && \
     sudo systemctl daemon-reload && \
     sudo systemctl enable shiny-server && \
@@ -46,4 +46,4 @@ RUN useradd -r -m shiny && usermod -aG sudo shiny && \
     wget https://raw.githubusercontent.com/mk-mohan/raspirshiny/master/hello/app.R -P /srv/shiny-server/hello
 # 
 EXPOSE 3838
-#CMD ["sudo service shiny-server start"]
+#CMD ["sudo systemctl start shiny-server"]
