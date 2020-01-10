@@ -46,4 +46,4 @@ RUN useradd -r -m shiny && usermod -aG sudo shiny && \
     wget https://raw.githubusercontent.com/mk-mohan/raspirshiny/master/hello/app.R -P /srv/shiny-server/hello
 # 
 EXPOSE 3838
-CMD ["sudo service shiny-server start"]
+#CMD ["sudo service shiny-server start"]
