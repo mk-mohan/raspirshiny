@@ -43,9 +43,10 @@ RUN useradd -r -m shiny && usermod -aG sudo shiny && \
     wget https://raw.githubusercontent.com/mk-mohan/raspirshiny/master/shiny-server.conf -O /etc/shiny-server/shiny-server.conf && \
     sudo wget https://raw.githubusercontent.com/mk-mohan/raspirshiny/master/shiny-server.service -O /lib/systemd/system/shiny-server.service && \
     sudo wget https://raw.githubusercontent.com/mk-mohan/raspirshiny/master/shiny-server.sh -O /usr/bin/shiny-server.sh && \
-    sudo chown shiny /lib/systemd/system/shiny-server.service
+    sudo chmod +x /usr/bin/shiny-server.sh && \
+    sudo chown shiny:shiny /lib/systemd/system/shiny-server.service
 
 # 
 EXPOSE 3838
-
-CMD ["sudo /usr/bin/shiny-server.sh"]
+CMD ["/bin/bash"]
+##CMD ["/usr/bin/shiny-server.sh"]
